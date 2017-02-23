@@ -1,5 +1,7 @@
+-- lapis
 local lapis = require("lapis")
-local json = require("json")
+local validate = require("lapis.validate").validate
+local json_params = require("lapis.application").json_params
 
 local app = lapis.Application()
 
@@ -27,10 +29,20 @@ app:get("/v1/status", function(self)
   return { status = 200, json = status }
 end)
 
-app:get("/v1/x509/cert", function(self)
+app:post("/v1/x509/cert", json_params(function(self)
+  val = validate(self.params, {
+    { "key", exists = true, type = String },
+    { "profile", exists = true, type = String },
+    { "cn", exists = true }
+  })
+
   response = { out = config.data }
 
-  return { status = 200, json = response }
-end)
+  if val == nil then
+    return { status = 200, json = response }
+  else
+    return { status = 400, json = response }
+  end
+end))
 
 return app
