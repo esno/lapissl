@@ -1,10 +1,13 @@
 -- lapis
 local lapis = require("lapis")
-local validate = require("lapis.validate").validate
+local validate = require("lapis.validate")
 local json_params = require("lapis.application").json_params
 
-local app = lapis.Application()
+validate.validate_functions.one_of_elements = function(input, items)
+  return input and items and items[input] ~= nil, "Missing element " .. input
+end
 
+-- config
 local config = {
   data = "./data",
   profiles = {
@@ -23,6 +26,9 @@ local config = {
   }
 }
 
+-- app
+local app = lapis.Application()
+
 app:get("/v1/status", function(self)
   local status = { status = "OK" }
 
@@ -33,21 +39,15 @@ app:post("/v1/x509/cert", json_params(function(self)
   local response = {}
   response.code = 200
 
-  local val = validate(self.params, {
+  local val = validate.validate(self.params, {
     { "key", exists = true, type = String },
-    { "profile", exists = true, type = String },
-    { "cn", exists = true }
+    { "profile", exists = true, type = String, one_of_elements = { config.profiles } },
+    { "cn", exists = true, type = String }
   })
 
-  local profile = config.profiles[self.params.profile]
-
   if val == nil then
-    if profile ~= nil then
-      response.json = { out = config.profiles[self.params.profile].expiry }
-    else
-      response.code = 400
-      response.json = { out = "error: profile not defined" }
-    end
+    local profile = config.profiles[self.params.profile]
+    response.json = { out = config.profiles[profile].expiry }
 
     return { status = response.code, json = response.json }
   else
