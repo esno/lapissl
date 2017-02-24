@@ -7,6 +7,9 @@ validate.validate_functions.one_of_elements = function(input, items)
   return input and items and items[input] ~= nil, "Missing element " .. input
 end
 
+-- x509
+local x509 = require("x509")
+
 -- config
 local config = {
   data = "./data",
@@ -40,14 +43,24 @@ app:post("/v1/x509/cert", json_params(function(self)
   response.code = 200
 
   local val = validate.validate(self.params, {
-    { "key", exists = true, type = String },
+    { "authkey", exists = true, type = String },
     { "profile", exists = true, type = String, one_of_elements = { config.profiles } },
-    { "cn", exists = true, type = String }
+    { "cn", exists = true, type = String },
+    { "keytype", exists = true, type = String, one_of = { "ec", "rsa" } }
   })
 
   if val == nil then
     local profile = config.profiles[self.params.profile]
-    response.json = { out = config.profiles[profile].expiry }
+    local keytype = self.params.keytype
+    local privkey = nil
+
+    if keytype == "ec" then
+      privkey = x509:gen_ec_key()
+    else
+      privkey = x509:gen_rsa_key(4096)
+    end
+
+    response.json = { private_key = privkey }
 
     return { status = response.code, json = response.json }
   else
