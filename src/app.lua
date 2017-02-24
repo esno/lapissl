@@ -24,24 +24,34 @@ local config = {
 }
 
 app:get("/v1/status", function(self)
-  status = { status = "OK" }
+  local status = { status = "OK" }
 
   return { status = 200, json = status }
 end)
 
 app:post("/v1/x509/cert", json_params(function(self)
-  val = validate(self.params, {
+  local response = {}
+  response.code = 200
+
+  local val = validate(self.params, {
     { "key", exists = true, type = String },
     { "profile", exists = true, type = String },
     { "cn", exists = true }
   })
 
-  response = { out = config.data }
+  local profile = config.profiles[self.params.profile]
 
   if val == nil then
-    return { status = 200, json = response }
+    if profile ~= nil then
+      response.json = { out = config.profiles[self.params.profile].expiry }
+    else
+      response.code = 400
+      response.json = { out = "error: profile not defined" }
+    end
+
+    return { status = response.code, json = response.json }
   else
-    return { status = 400, json = response }
+    return { status = 400, json = { out = "error: bad request" } }
   end
 end))
 
