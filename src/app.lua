@@ -60,7 +60,12 @@ app:post("/v1/x509/cert", json_params(function(self)
       privkey = x509:gen_rsa_key(4096)
     end
 
-    response.json = { private_key = privkey }
+    csr = x509:gen_csr({ C = 'DE' }, {}, {}, privkey)
+
+    response.json = {
+      private_key = privkey,
+      csr = csr
+    }
 
     return { status = response.code, json = response.json }
   else
