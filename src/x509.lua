@@ -3,7 +3,18 @@ local openssl = require("openssl")
 
 local x509 = {}
 
-function x509.gen_csr(self, subject, private_key)
+function x509.gen_cert(self, csr, private_key, issuer)
+  crt = openssl.x509.new(csr)
+  crt:sign(
+    private_key,
+    crt,
+    "sha512WithhRSAEncryption"
+  )
+
+  return crt:export("pem")
+end
+
+function x509.gen_csr(self, subject, extensions, private_key)
   local s_parse = function(self)
     s = {}
     for skey, svalue in pairs(subject) do
@@ -19,38 +30,9 @@ function x509.gen_csr(self, subject, private_key)
     return s
   end
 
-  local e_parse = function(self)
-    e = {}
-    for ekey, evalue in pairs({ extensions }) do
-      for k, v in pairs(evalue) do
-        if k == "ca" and v == true then
-          new = {
-            critical = true,
-            object = "cA",
-            value = "TRUE"
-          }
-          table.insert(e, new)
-        elseif k == "pathlen" then
-          new = {
-            critical = false,
-            object = "pathLenConstraint",
-            value = v
-          }
-          table.insert(e, new)
-        end
-      end
-    end
-
-    return e
-  end
-
   local sobj = openssl.x509.name.new(s_parse())
-  --local eobj = openssl.x509.extension.new_extension(e_parse())
-
   local csr = openssl.x509.req.new(
     sobj,
-    --eobj,
-    --nil,
     openssl.pkey.read(
       private_key,
       true

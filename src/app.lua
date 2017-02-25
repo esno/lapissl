@@ -16,7 +16,6 @@ local config = {
   profiles = {
     rootca = {
       basic_constraints = {
-        critical = true,
         ca = true,
         pathlen = 0
       },
@@ -40,7 +39,7 @@ end)
 
 app:post("/v1/x509/cert", json_params(function(self)
   local response = {}
-  response.code = 200
+  response.code = 201
 
   local val = validate.validate(self.params, {
     { "authkey", exists = true, type = String },
@@ -60,7 +59,7 @@ app:post("/v1/x509/cert", json_params(function(self)
       privkey = x509:gen_rsa_key(4096)
     end
 
-    csr_subject = {}
+    local csr_subject = {}
 
     csr_subject.C = self.params.c or nil
     csr_subject.ST = self.params.st or nil
@@ -70,11 +69,13 @@ app:post("/v1/x509/cert", json_params(function(self)
     csr_subject.emailAddress = self.params.email or nil
     csr_subject.CN = self.params.cn
 
-    csr = x509:gen_csr(csr_subject, privkey)
+    local csr = x509:gen_csr(csr_subject, profile, privkey)
+    local crt = x509.gen_cert(csr, privkey, nil)
 
     response.json = {
       private_key = privkey,
-      csr = csr
+      csr = csr,
+      crt = crt
     }
 
     return { status = response.code, json = response.json }
