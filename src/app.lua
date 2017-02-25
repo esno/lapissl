@@ -60,7 +60,17 @@ app:post("/v1/x509/cert", json_params(function(self)
       privkey = x509:gen_rsa_key(4096)
     end
 
-    csr = x509:gen_csr({ C = 'DE' }, {}, {}, privkey)
+    csr_subject = {}
+
+    csr_subject.C = self.params.c or nil
+    csr_subject.ST = self.params.st or nil
+    csr_subject.L = self.params.l or nil
+    csr_subject.O = self.params.o or nil
+    csr_subject.OU = self.params.ou or nil
+    csr_subject.emailAddress = self.params.email or nil
+    csr_subject.CN = self.params.cn
+
+    csr = x509:gen_csr(csr_subject, privkey)
 
     response.json = {
       private_key = privkey,

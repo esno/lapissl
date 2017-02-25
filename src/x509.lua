@@ -3,19 +3,62 @@ local openssl = require("openssl")
 
 local x509 = {}
 
-function x509.gen_csr(self, subject, extension, attribute, private_key)
+function x509.gen_csr(self, subject, private_key)
+  local s_parse = function(self)
+    s = {}
+    for skey, svalue in pairs(subject) do
+      if type(svalue) == "string" then
+        table.insert(s, { [skey] = svalue })
+      else
+        for k, v in pairs(svalue) do
+          table.insert(s, { [skey] = v })
+        end
+      end
+    end
+
+    return s
+  end
+
+  local e_parse = function(self)
+    e = {}
+    for ekey, evalue in pairs({ extensions }) do
+      for k, v in pairs(evalue) do
+        if k == "ca" and v == true then
+          new = {
+            critical = true,
+            object = "cA",
+            value = "TRUE"
+          }
+          table.insert(e, new)
+        elseif k == "pathlen" then
+          new = {
+            critical = false,
+            object = "pathLenConstraint",
+            value = v
+          }
+          table.insert(e, new)
+        end
+      end
+    end
+
+    return e
+  end
+
+  local sobj = openssl.x509.name.new(s_parse())
+  --local eobj = openssl.x509.extension.new_extension(e_parse())
+
   local csr = openssl.x509.req.new(
-    openssl.x509.name.new(subject),
-    openssl.x509.extensions.new:extension(extensions),
-    openssl.x509.attr.new_attribute(attributes),
+    sobj,
+    --eobj,
+    --nil,
     openssl.pkey.read(
       private_key,
       true
     ),
-    "sha256WithRSAEncryption"
+    "sha512WithRSAEncryption"
   )
 
-  return csr:export("pem", false)
+  return csr:export("pem")
 end
 
 function x509.gen_ec_key(self)
