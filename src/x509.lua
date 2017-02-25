@@ -12,6 +12,22 @@ local math = require("math")
 local x509 = {}
 
 function x509.gen_cert(csr, profile, pkeys)
+  local _conv_time = function(time)
+    local unit = string.sub(time, -1)
+    local range = tonumber(string.sub(time, 0, string.len(time) - 1))
+    local ret = 0
+
+    if unit == "y" then
+      ret = range * 365 * 24 * 60 * 60
+    end
+
+    if unit == "d" then
+      ret = range * 24 * 60 * 60
+    end
+
+    return ret
+  end
+
   local crt = openssl_x509.new()
 
   constraints = {}
@@ -42,6 +58,10 @@ function x509.gen_cert(csr, profile, pkeys)
   crt:setIssuer(crt:getSubject())
   crt:setPublicKey(csr:getPublicKey())
   crt:setBasicConstraintsCritical(true)
+
+  local issued, expires = crt:getLifetime()
+  crt:setLifetime(issued, _conv_time(profile.expiry) + expires)
+
   crt:sign(pkeys)
 
   return crt
