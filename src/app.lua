@@ -70,7 +70,7 @@ app:post("/v1/x509/cert", json_params(function(self)
     csr_subject.CN = self.params.cn
 
     local csr = x509:gen_csr(csr_subject, pkeys)
-    local crt = x509.gen_cert(csr, pkeys)
+    local crt = x509.gen_cert(csr, profile, pkeys)
 
     response.json = {
       key = pkeys:toPEM("private"),

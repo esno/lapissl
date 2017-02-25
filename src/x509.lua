@@ -10,8 +10,21 @@ local math = require("math")
 
 local x509 = {}
 
-function x509.gen_cert(csr, pkeys)
+function x509.gen_cert(csr, profile, pkeys)
   local crt = openssl_x509.new()
+
+  constraints = {}
+  if profile.basic_constraints.ca == true then
+    crt:setBasicConstraints{ CA = true }
+    crt:setBasicConstraintsCritical(true)
+  else
+    crt:setBasicConstraints{ CA = true }
+  end
+
+  if profile.basic_constraints.pathlen then
+    current = crt:getBasicConstraints("CA")
+    crt:setBasicConstraints{ CA = current, pathLen = profile.basic_constraints.pathlen }
+  end
 
   crt:setVersion(csr:getVersion())
   crt:setSerial(math.random(1, 65535))
