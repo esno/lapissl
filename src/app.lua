@@ -51,12 +51,12 @@ app:post("/v1/x509/cert", json_params(function(self)
   if val == nil then
     local profile = config.profiles[self.params.profile]
     local keytype = self.params.keytype
-    local privkey = nil
+    local pkeys = nil
 
     if keytype == "ec" then
-      privkey = x509:gen_ec_key()
+      pkeys = x509:gen_ec_key()
     else
-      privkey = x509:gen_rsa_key(4096)
+      pkeys = x509:gen_rsa_key(4096)
     end
 
     local csr_subject = {}
@@ -69,13 +69,13 @@ app:post("/v1/x509/cert", json_params(function(self)
     csr_subject.emailAddress = self.params.email or nil
     csr_subject.CN = self.params.cn
 
-    local csr = x509:gen_csr(csr_subject, profile, privkey)
-    local crt = x509.gen_cert(csr, privkey, nil)
+    local csr = x509:gen_csr(csr_subject, pkeys)
+    local crt = x509.gen_cert(csr, pkeys)
 
     response.json = {
-      private_key = privkey,
-      csr = csr,
-      crt = crt
+      key = pkeys:toPEM("private"),
+      crt = tostring(crt),
+      csr = tostring(csr)
     }
 
     return { status = response.code, json = response.json }
