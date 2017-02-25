@@ -17,14 +17,13 @@ function x509.gen_cert(csr, profile, pkeys)
   constraints = {}
   if profile.basic_constraints.ca == true then
     crt:setBasicConstraints{ CA = true }
-    crt:setBasicConstraintsCritical(true)
   else
-    crt:setBasicConstraints{ CA = true }
+    crt:setBasicConstraints{ CA = false }
   end
 
-  if profile.basic_constraints.pathlen then
+  if crt:getBasicConstraints("CA") == true then
     current = crt:getBasicConstraints("CA")
-    crt:setBasicConstraints{ CA = current, pathLen = profile.basic_constraints.pathlen }
+    crt:setBasicConstraints{ CA = current, pathLen = profile.basic_constraints.pathlen or 0 }
   end
 
   usage = "critical"
@@ -42,6 +41,7 @@ function x509.gen_cert(csr, profile, pkeys)
   crt:setSubject(csr:getSubject())
   crt:setIssuer(crt:getSubject())
   crt:setPublicKey(csr:getPublicKey())
+  crt:setBasicConstraintsCritical(true)
   crt:sign(pkeys)
 
   return crt
