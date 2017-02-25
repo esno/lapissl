@@ -20,8 +20,8 @@ local config = {
         pathlen = 0
       },
       key_usage = {
-        "Certificate Signer",
-        "CRL Signer"
+        "keyCertSign",
+        "cRLSign"
       },
       expiry = "50y"
     }

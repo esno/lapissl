@@ -3,6 +3,7 @@ local openssl = require("openssl")
 local openssl_pkey = require("openssl.pkey")
 local openssl_x509 = require("openssl.x509")
 local openssl_x509_csr = require("openssl.x509.csr")
+local openssl_x509_extension = require("openssl.x509.extension")
 local openssl_x509_name = require("openssl.x509.name")
 
 -- math
@@ -24,6 +25,16 @@ function x509.gen_cert(csr, profile, pkeys)
   if profile.basic_constraints.pathlen then
     current = crt:getBasicConstraints("CA")
     crt:setBasicConstraints{ CA = current, pathLen = profile.basic_constraints.pathlen }
+  end
+
+  usage = "critical"
+  for kkey, kvalue in pairs(profile.key_usage) do
+    usage = usage .. "," .. kvalue
+    print(usage)
+  end
+
+  if usage ~= "critical" then
+    crt:addExtension(openssl_x509_extension.new("keyUsage", usage))
   end
 
   crt:setVersion(csr:getVersion())
