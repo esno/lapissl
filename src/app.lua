@@ -58,7 +58,7 @@ app:get("/v1/status", function(self)
   return { status = 200, json = status }
 end)
 
-app:post("/v1/x509/cert", json_params(function(self)
+app:post("/v1/x509/crt", json_params(function(self)
   local response = {}
   response.code = 201
 
@@ -109,6 +109,48 @@ app:post("/v1/x509/cert", json_params(function(self)
     response.json = {
       key = pkeys:toPEM("private"),
       crt = tostring(crt),
+      csr = tostring(csr)
+    }
+
+    return { status = response.code, json = response.json }
+  else
+    return { status = 400, json = { out = "error: bad request" } }
+  end
+end))
+
+app:post("/v1/x509/csr", json_params(function(self)
+  local response = {}
+  response.code = 201
+
+  local val = validate.validate(self.params, {
+    { "cn", exists = true, type = String },
+    { "keytype", exists = true, type = String, one_of = { "ec", "rsa" } }
+  })
+
+  if val == nil then
+    local keytype = self.params.keytype
+    local pkeys = nil
+
+    if keytype == "ec" then
+      pkeys = x509:gen_ec_key()
+    else
+      pkeys = x509:gen_rsa_key(4096)
+    end
+
+    local csr_subject = {}
+
+    csr_subject.C = self.params.c or nil
+    csr_subject.ST = self.params.st or nil
+    csr_subject.L = self.params.l or nil
+    csr_subject.O = self.params.o or nil
+    csr_subject.OU = self.params.ou or nil
+    csr_subject.emailAddress = self.params.email or nil
+    csr_subject.CN = self.params.cn
+
+    local csr = x509.gen_csr(csr_subject, pkeys)
+
+    response.json = {
+      key = pkeys:toPEM("private"),
       csr = tostring(csr)
     }
 
