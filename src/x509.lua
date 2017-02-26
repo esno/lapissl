@@ -12,7 +12,7 @@ local math = require("math")
 -- module
 local x509 = {}
 
-function x509.gen_cert(csr, profile, pkeys)
+function x509.gen_cert(csr, profile)
   local crt = openssl_x509.new()
   crt:setPublicKey(csr:getPublicKey())
   crt:setVersion(csr:getVersion())
@@ -60,13 +60,18 @@ function x509.gen_cert(csr, profile, pkeys)
   crt:setSerial(math.random(1, 65535))
   crt:setSubject(csr:getSubject())
   crt:setBasicConstraintsCritical(true)
-
   crt:setKeyIdentifier("subjectKeyIdentifier")
-  crt:setKeyIdentifier("authorityKeyIdentifier")
 
-  if profile.issuer then
+  return crt
+end
+
+function x509.sign_cert(pkeys, crt, ca)
+  if ca then
+    crt:setIssuer(ca:getSubject())
+    crt:setKeyIdentifier("authorityKeyIdentifier", ca)
   else
     crt:setIssuer(crt:getSubject())
+    crt:setKeyIdentifier("authorityKeyIdentifier")
   end
 
   crt:sign(pkeys)
@@ -103,6 +108,14 @@ end
 function x509.gen_rsa_key(key_size)
   local key openssl_pkey.new{ type = "RSA", bits = key_size }
   return key
+end
+
+function x509.map_cert(crt)
+  return openssl_x509.new(crt)
+end
+
+function x509.map_key(key)
+  return openssl_pkey.new(key)
 end
 
 return x509
