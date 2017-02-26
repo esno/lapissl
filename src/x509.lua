@@ -9,9 +9,14 @@ local openssl_x509_name = require("openssl.x509.name")
 -- math
 local math = require("math")
 
+-- module
 local x509 = {}
 
 function x509.gen_cert(csr, profile, pkeys)
+  local crt = openssl_x509.new()
+  crt:setPublicKey(csr:getPublicKey())
+  crt:setVersion(csr:getVersion())
+
   local _conv_time = function(time)
     local unit = string.sub(time, -1)
     local range = tonumber(string.sub(time, 0, string.len(time) - 1))
@@ -28,7 +33,8 @@ function x509.gen_cert(csr, profile, pkeys)
     return ret
   end
 
-  local crt = openssl_x509.new()
+  local issued, expires = crt:getLifetime()
+  crt:setLifetime(issued, _conv_time(profile.expiry) + expires)
 
   constraints = {}
   if profile.basic_constraints.ca == true then
@@ -45,29 +51,30 @@ function x509.gen_cert(csr, profile, pkeys)
   usage = "critical"
   for kkey, kvalue in pairs(profile.key_usage) do
     usage = usage .. "," .. kvalue
-    print(usage)
   end
 
   if usage ~= "critical" then
     crt:addExtension(openssl_x509_extension.new("keyUsage", usage))
   end
 
-  crt:setVersion(csr:getVersion())
   crt:setSerial(math.random(1, 65535))
   crt:setSubject(csr:getSubject())
-  crt:setIssuer(crt:getSubject())
-  crt:setPublicKey(csr:getPublicKey())
   crt:setBasicConstraintsCritical(true)
 
-  local issued, expires = crt:getLifetime()
-  crt:setLifetime(issued, _conv_time(profile.expiry) + expires)
+  crt:setKeyIdentifier("subjectKeyIdentifier")
+  crt:setKeyIdentifier("authorityKeyIdentifier")
+
+  if profile.issuer then
+  else
+    crt:setIssuer(crt:getSubject())
+  end
 
   crt:sign(pkeys)
 
   return crt
 end
 
-function x509.gen_csr(self, subject, pkeys)
+function x509.gen_csr(subject, pkeys)
   local sobj = openssl_x509_name.new()
 
   for skey, svalue in pairs(subject) do
