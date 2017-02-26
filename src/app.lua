@@ -3,6 +3,10 @@ local lapis = require("lapis")
 local validate = require("lapis.validate")
 local json_params = require("lapis.application").json_params
 
+validate.validate_functions.is_authorized = function(input, authkey)
+  return input and authkey and authkey == input, "Authentication Key does not match"
+end
+
 validate.validate_functions.one_of_elements = function(input, items)
   return input and items and items[input] ~= nil, "Missing element " .. input
 end
@@ -59,8 +63,8 @@ app:post("/v1/x509/cert", json_params(function(self)
   response.code = 201
 
   local val = validate.validate(self.params, {
-    { "authkey", exists = true, type = String },
     { "profile", exists = true, type = String, one_of_elements = { config.profiles } },
+    { "authkey", exists = true, type = String, is_authorized = config.profiles[self.params.profile].auth_key },
     { "cn", exists = true, type = String },
     { "keytype", exists = true, type = String, one_of = { "ec", "rsa" } }
   })
