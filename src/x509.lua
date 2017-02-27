@@ -93,9 +93,10 @@ function x509.gen_csr(subject, pkeys)
   end
 
   local csr = openssl_x509_csr.new()
+  csr:setPublicKey(pkeys)
   csr:setVersion(3)
   csr:setSubject(sobj)
-  csr:setPublicKey(pkeys)
+  csr:sign(pkeys)
 
   return csr
 end
