@@ -101,9 +101,9 @@ app:post("/v1/x509/crt", json_params(function(self)
       fh:close()
       fh = io.open(config.data .. "/" .. profile.issuer .. ".key.pem", "r")
       ca.file.key = fh:read "*a"
-      x509.sign_cert(x509.map_key(ca.file.key), crt, x509.map_cert(ca.file.crt))
+      crt = x509.sign_cert(x509.map_key(ca.file.key), crt, x509.map_cert(ca.file.crt))
     else
-      x509.sign_cert(pkeys, crt)
+      crt = x509.sign_cert(pkeys, crt)
     end
 
     response.json = {
