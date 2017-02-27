@@ -18,36 +18,7 @@ local x509 = require("x509")
 local io = require("io")
 
 -- config
-local config = {
-  data = "./data",
-  profiles = {
-    rootca = {
-      auth_key = "9Dln1zZ2M1FwR9QU",
-      basic_constraints = {
-        ca = true,
-        pathlen = 0
-      },
-      key_usage = {
-        "keyCertSign",
-        "cRLSign"
-      },
-      expiry = "50y"
-    },
-    subca = {
-      auth_key = "706Yss_B1gZNCvi0",
-      basic_constraints = {
-        ca = true,
-        pathlen = 0
-      },
-      key_usage = {
-        "keyCertSign",
-        "cRLSign"
-      },
-      expiry = "25y",
-      issuer = "asdfghjkl"
-    }
-  }
-}
+local config = require("config")
 
 -- app
 local app = lapis.Application()
