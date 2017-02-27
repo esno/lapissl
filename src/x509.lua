@@ -101,13 +101,16 @@ function x509.gen_csr(subject, pkeys)
   return csr
 end
 
-function x509.gen_ec_key()
+function x509.gen_ec_key(self)
   local key = openssl_pkey.new{ type = "EC", curve = "secp384r1" }
   return key
 end
 
-function x509.gen_rsa_key(key_size)
+function x509.gen_rsa_key(self, key_size)
   local key openssl_pkey.new{ type = "RSA", bits = key_size }
+  if not key then
+    print("failed generating key " .. tostring(key_size))
+  end
   return key
 end
 

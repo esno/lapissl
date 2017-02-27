@@ -72,9 +72,21 @@ app:post("/v1/x509/crt", json_params(function(self)
       fh:close()
       fh = io.open(config.data .. "/" .. profile.issuer .. ".key.pem", "r")
       ca.file.key = fh:read "*a"
+      fh:close()
       crt = x509.sign_cert(x509.map_key(ca.file.key), crt, x509.map_cert(ca.file.crt))
     else
       crt = x509.sign_cert(pkeys, crt)
+    end
+
+    if crt then
+      local fhCrt = io.open(config.data .. "/" .. csr_subject.CN .. ".crt.pem", "w")
+      fhCrt:write(tostring(crt))
+      fhCrt:close()
+      if profile.basic_constraints.ca then
+        local fhKey = io.open(config.data .. "/" .. csr_subject.CN .. ".key.pem", "w")
+        fhKey:write(pkeys:toPEM("private"))
+        fhKey:close()
+      end
     end
 
     response.json = {

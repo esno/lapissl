@@ -25,7 +25,7 @@ config = {
         "cRLSign"
       },
       expiry = "25y",
-      issuer = "exampleRootCA"
+      issuer = "rootca"
     }
   }
 }
