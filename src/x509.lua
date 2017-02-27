@@ -114,6 +114,10 @@ function x509.map_cert(crt)
   return openssl_x509.new(crt)
 end
 
+function x509.map_csr(csr)
+  return openssl_x509_csr.new(csr)
+end
+
 function x509.map_key(key)
   return openssl_pkey.new(key)
 end

@@ -160,4 +160,46 @@ app:post("/v1/x509/csr", json_params(function(self)
   end
 end))
 
+app:post("/v1/x509/sign", json_params(function(self)
+  local response = {}
+  response.code = 201
+
+  local val = validate.validate(self.params, {
+    { "profile", exists = true, type = String, one_of_elements = { config.profiles } },
+    { "authkey", exists = true, type = String, is_authorized = config.profiles[self.params.profile].auth_key },
+    { "csr", exists = true, type = String }
+  })
+
+  if val == nil then
+    local profile = config.profiles[self.params.profile]
+    local pkeys = nil
+    local crt = x509.gen_cert(x509.map_csr(self.params.csr), profile)
+
+    if profile.issuer then
+      local ca = {}
+      local fh = io.open(config.data .. "/" .. profile.issuer .. ".crt.pem", "r")
+      ca.file = {}
+      ca.file.crt = fh:read "*a"
+      fh:close()
+      fh = io.open(config.data .. "/" .. profile.issuer .. ".key.pem", "r")
+      ca.file.key = fh:read "*a"
+      crt = x509.sign_cert(
+        x509.map_key(ca.file.key),
+        crt,
+        x509.map_cert(ca.file.crt)
+      )
+    else
+      x509.sign_cert(pkeys, crt)
+    end
+
+    response.json = {
+      crt = tostring(crt)
+    }
+
+    return { status = response.code, json = response.json }
+  else
+    return { status = 400, json = { out = "error: bad request" } }
+  end
+end))
+
 return app
