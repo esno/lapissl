@@ -34,7 +34,14 @@ app:post("/v1/x509/crt", json_params(function(self)
   response.code = 201
 
   local val = validate.validate(self.params, {
-    { "profile", exists = true, type = String, one_of_elements = { config.profiles } },
+    { "profile", exists = true, type = String, one_of_elements = { config.profiles } }
+  })
+
+  if val then
+    return { status = 400, json = { out = "error: bad request" } }
+  end
+
+  local val = validate.validate(self.params, {
     { "authkey", exists = true, type = String, is_authorized = config.profiles[self.params.profile].auth_key },
     { "cn", exists = true, type = String },
     { "keytype", exists = true, type = String, one_of = { "ec", "rsa" } }
