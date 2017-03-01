@@ -1,6 +1,7 @@
 -- lapis
 local lapis = require("lapis")
 local json_params = require("lapis.application").json_params
+
 -- api
 local api = {
   version = {
@@ -19,7 +20,7 @@ function api.init(self)
           print("context: " .. context.context)
           api.app:get(
             "/" .. version .. "/" .. endpoint .. context.context,
-            json_params(function() return context:callable() end)
+            json_params(function(self) return context:callable(self.params) end)
           )
         end
       end
@@ -28,7 +29,7 @@ function api.init(self)
           print("context: " .. context.context)
           api.app:post(
             "/" .. version .. "/" .. endpoint .. context.context,
-            json_params(function() return context:callable() end)
+            json_params(function(self) return context:callable(self.params) end)
           )
         end
       end
