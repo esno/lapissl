@@ -8,8 +8,8 @@ end
 local validation = {
 }
 
-function validation:validate(self, params, checks)
-  return validate.validate(params, { checks })
+function validation.validate(self, params, checks)
+  return validate.validate(params, checks)
 end
 
 return validation
