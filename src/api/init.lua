@@ -12,12 +12,9 @@ local api = {
 
 function api.init(self)
   for version, blueprint in pairs(api.version) do
-    print("version: " .. version)
     for endpoint, definition in pairs(blueprint) do
-      print("endpoint: " .. endpoint)
       if definition.get then
         for k, context in pairs(definition.get) do
-          print("context: " .. context.context)
           api.app:get(
             "/" .. version .. "/" .. endpoint .. context.context,
             json_params(function(self) return context:callable(self.params) end)
@@ -26,7 +23,6 @@ function api.init(self)
       end
       if definition.post then
         for k, context in pairs(definition.post) do
-          print("context: " .. context.context)
           api.app:post(
             "/" .. version .. "/" .. endpoint .. context.context,
             json_params(function(self) return context:callable(self.params) end)
