@@ -82,12 +82,7 @@ function func.create_csr(self, params)
 
     local csr = x509csr:create_csr(subject, params.key)
 
-    response = {
-      code = 201,
-      ret = {
-        csr = tostring(csr)
-      }
-    }
+    response = { code = 201, ret = { csr = tostring(csr) } }
   else
     response = { code = 400, ret = { msg = "Missing cn or key parameter" } }
   end
