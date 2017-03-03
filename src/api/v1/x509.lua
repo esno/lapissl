@@ -48,6 +48,7 @@ function func.create_crt(self, params)
     else
       response = { code = 400, ret = { msg = "Missing authkey parameter" } }
     end
+    if response.code == 201 then func:write(crt:getSubject(), { crt = tostring(crt), key = params.key }) end
   else
     response = { code = 400, ret = { msg = "Missing profile or csr parameter" } }
   end
@@ -82,6 +83,23 @@ function func.create_csr(self, params)
   end
 
   return { status = response.code, json = response.ret }
+end
+
+function func.write(self, subject, file)
+  local subj = subject:all()
+  for _, v in pairs(subj) do
+    if v.sn == "CN" then name = v.blob end
+  end
+  if file.crt and name then
+    local fh = io.open(config.data .. "/" .. name .. ".crt.pem", "w")
+    fh:write(file.crt)
+    fh:close()
+  end
+  if file.key and name then
+    local fh = io.open(config.data .. "/" .. name .. ".key.pem", "w")
+    fh:write(file.key)
+    fh:close()
+  end
 end
 
 local x509 = {
