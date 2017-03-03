@@ -44,26 +44,26 @@ I will skip back to the official bindings as soon as PR [#88](https://github.com
 
 # endpoints
 
-## /v1/x509/csr
+## /v1/key
 
-Generates a keypair and certificate signing request
+Generates a keypair
 
     curl -H "Content-type: application/json" \
-      -d '{"cn": "www.example.org", "o": ["example corporation", "example corp."], "keytype": "ec"}' \
+      -d '{"keytype": "ec"}' \
+      'http://127.0.0.1:8080/v1/x509/csr' && echo
+
+## /v1/x509/csr
+
+Generates a certificate signing request
+
+    curl -H "Content-type: application/json" \
+      -d '{"cn": "www.example.org", "o": ["example corporation", "example corp."], "key": "key-in-pem-format"}' \
       'http://127.0.0.1:8080/v1/x509/csr' && echo
 
 ## /v1/x509/crt
 
-Generates a keypair, certificate signing request and a signed certificate.
+Generates a signed certificate. Key parameter is only required when the result should be a self-signed certificate
 
     curl -H "Content-type: application/json" \
-      -d '{"authkey": "profile-specific-key", "profile": "server", "cn": "www.example.org", "o": ["foo"], "keytype": "ec"}' \
+      -d '{"authkey": "profile-specific-key", "profile": "server", "csr": "csr-in-pem-format", "key": "key-in-pem-format"}' \
       'http://127.0.0.1:8080/v1/x509/crt' && echo
-
-## /v1/x509/sign
-
-Signs the posted certificate signing request.
-
-    curl -H "Content-type: application/json" \
-      -d '{"authkey": "profile-specific-key", "profile": "server", "csr": "csr-in-pem-format"}' \
-      'http://127.0.0.1:8080/v1/x509/sign' && echo
