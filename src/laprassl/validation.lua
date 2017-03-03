@@ -1,7 +1,7 @@
 -- lapis
 local validate = require("lapis.validate")
 -- laprassl
-config = require("laprassl.config")
+config = require("config")
 
 validate.validate_functions.one_of_keys = function(input, items)
   return input and items and items[input] ~= nil, "Missing element " .. input

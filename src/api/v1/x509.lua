@@ -5,7 +5,7 @@ config = require("config")
 
 local func = {}
 
-function func.create_crt(elf, params)
+function func.create_crt(self, params)
   local x509crt = laprassl_x509
   local response = {}
 
@@ -23,33 +23,27 @@ function func.create_crt(elf, params)
       profile = config.profiles[params.profile]
       crt = x509crt:create_crt(params.csr, profile)
 
-      invalid = validation:validate(params, {
-        { "issuer", exists = true, type = String, issuer_exists = true }
-      })
-
-      if not invalid then
-        local fh = io.open(config.data .. "/" .. params.issuer .. ".crt.pem", "r")
+      if profile.issuer then
+        local fh = io.open(config.data .. "/" .. profile.issuer .. ".crt.pem", "r")
         local ca = {}
         ca.crt = fh:read "*a"
         fh:close()
-        fh = io.open(config.data .. "/" .. params.issuer .. ".key.pem", "r")
+        fh = io.open(config.data .. "/" .. profile.issuer .. ".key.pem", "r")
         ca.key = fh:read "*a"
         fh:close()
         crt = x509crt:sign_crt(crt, ca.key, ca.crt)
-        response = { code = 201, ret = { crt = crt } }
+        response = { code = 201, ret = { crt = tostring(crt) } }
       else
-        response = { code = 400, ret = { msg = "Missing issuer parameter" } }
-      end
+        invalid = validation:validate(params, {
+          { "key", exists = true, type = String }
+        })
 
-      invalid = validation:validate(params, {
-        { "key", exists = true, type = String }
-      })
-
-      if not invalid then
-        crt = x509crt:sign_crt(crt, key, crt)
-        response = { code = 201, ret = { crt = crt } }
-      else
-        response = { code = 400, ret = { msg = "Missing key parameter" } }
+        if not invalid then
+          crt = x509crt:sign_crt(crt, params.key, crt)
+          response = { code = 201, ret = { crt = tostring(crt) } }
+        else
+          response = { code = 400, ret = { msg = "Missing key parameter" } }
+        end
       end
     else
       response = { code = 400, ret = { msg = "Missing authkey parameter" } }

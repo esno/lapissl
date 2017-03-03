@@ -4,6 +4,7 @@ local math = require("math")
 -- luaossl
 local openssl_x509 = require("openssl.x509")
 local openssl_x509_csr = require("openssl.x509.csr")
+local openssl_x509_extension = require("openssl.x509.extension")
 local openssl_x509_name = require("openssl.x509.name")
 local openssl_pkey = require("openssl.pkey")
 
@@ -13,24 +14,24 @@ function x509.create_crt(self, csr, profile)
   local req = openssl_x509_csr.new(csr)
   local crt = openssl_x509.new()
 
-  crt:setPublicKey(csr:getPublicKey())
-  crt:setVersion(csr:getVersion())
+  crt:setPublicKey(req:getPublicKey())
+  crt:setVersion(req:getVersion())
 
   local _conv_time = function(time)
-    local unit = string.sub(time, -1) 
-    local range = tonumber(string.sub(time, 0, string.len(time) - 1)) 
-    local ret = 0 
+    local unit = string.sub(time, -1)
+    local range = tonumber(string.sub(time, 0, string.len(time) - 1))
+    local ret = 0
 
     if unit == "y" then
       ret = range * 365 * 24 * 60 * 60
-    end 
+    end
 
     if unit == "d" then
       ret = range * 24 * 60 * 60
-    end 
+    end
 
-    return ret 
-  end 
+    return ret
+  end
 
   local issued, expires = crt:getLifetime()
   crt:setLifetime(issued, _conv_time(profile.expiry) + expires)
@@ -45,41 +46,41 @@ function x509.create_crt(self, csr, profile)
   if crt:getBasicConstraints("CA") == true then
     current = crt:getBasicConstraints("CA")
     crt:setBasicConstraints{ CA = current, pathLen = profile.basic_constraints.pathlen or 0 } 
-  end 
+  end
 
   usage = "critical"
   for kkey, kvalue in pairs(profile.key_usage) do
     usage = usage .. "," .. kvalue
-  end 
+  end
 
   if usage ~= "critical" then
     crt:addExtension(openssl_x509_extension.new("keyUsage", usage))
-  end 
+  end
 
   crt:setSerial(math.random(1, 65535))
-  crt:setSubject(csr:getSubject())
+  crt:setSubject(req:getSubject())
   crt:setBasicConstraintsCritical(true)
   crt:setKeyIdentifier("subjectKeyIdentifier")
 
-  return crt 
+  return crt
 end
 
-function x509.sign_cert(key, crt, ca)
-  if type(key) == "string" then key = openssl_pkey.new(key) end
-  if type(crt) == "string" then crt = openssl_x509.new(crt) end
-  if type(ca) == "string" then ca = openssl_x509.new(ca) end
+function x509.sign_crt(self, crt, key, ca)
+  if type(key) == "string" then pkey = openssl_pkey.new(key) else pkey = key end
+  if type(crt) == "string" then subject = openssl_x509.new(crt) else subject = crt end
+  if type(ca) == "string" then issuer = openssl_x509.new(ca) else issuer = ca end
 
-  if ca then
-    crt:setIssuer(ca:getSubject())
-    crt:setKeyIdentifier("authorityKeyIdentifier", ca) 
+  if ca or issuer then
+    subject:setIssuer(issuer:getSubject())
+    subject:setKeyIdentifier("authorityKeyIdentifier", issuer)
   else
-    crt:setIssuer(crt:getSubject())
-    crt:setKeyIdentifier("authorityKeyIdentifier")
-  end 
+    subject:setIssuer(subject:getSubject())
+    subject:setKeyIdentifier("authorityKeyIdentifier")
+  end
 
-  crt:sign(key)
+  subject:sign(pkey)
 
-  return crt
+  return subject
 end
 
 function x509.create_csr(self, subject, key)
