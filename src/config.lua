@@ -37,6 +37,20 @@ else
         expiry = "25y",
         issuer = "rootca"
       }
+    },
+    bootstrap = {
+      rootca = {
+        subject = {
+          CN = "rootca"
+        },
+        profile = "rootca"
+      },
+      subca = {
+        subject = {
+          CN = "subca"
+        },
+        profile = "subca"
+      }
     }
   }
 end
