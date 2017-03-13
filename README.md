@@ -34,6 +34,10 @@ I will skip back to the official bindings as soon as PR [#88](https://github.com
     export LUA_PATH='~/lua/usr/local/share/lua/5.1/?.so;${LUA_PATH}'
     export LUA_CPATH='~/lua/usr/local/lib/lua/5.1/?.so;${LUA_CPATH}'
 
+### bootstrap
+
+For initial installation use `bootstrap.lua` to create rootca, subca and server certificate then start nginx.
+
 # features
 
 * create RSA/ECDSA keys
@@ -67,3 +71,7 @@ Generates a signed certificate. Key parameter is only required when the result s
     curl -H "Content-type: application/json" \
       -d '{"authkey": "profile-specific-key", "profile": "server", "csr": "csr-in-pem-format", "key": "key-in-pem-format"}' \
       'http://127.0.0.1:8080/v1/x509/crt' && echo
+
+# clients
+
+Currently there is only an [ansible client](https://github.com/fnordpipe/ansible-playbook/blob/master/library/ssl/laprassl.py).
