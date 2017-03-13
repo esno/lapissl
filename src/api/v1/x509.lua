@@ -15,7 +15,7 @@ function func.create_crt(self, params)
   })
 
   if not invalid then
-    invalid = validation:validate(params, {
+    local invalid = validation:validate(params, {
       { "authkey", exists = true, type = String, is_authorized = config.profiles[params.profile].authkey }
     })
 
