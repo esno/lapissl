@@ -57,6 +57,17 @@ function x509.create_crt(self, csr, profile)
     crt:addExtension(openssl_x509_extension.new("keyUsage", usage))
   end
 
+  if profile.extended_key_usage then
+    usage = "critical"
+    for kkey, kvalue in pairs(profile.extended_key_usage) do
+      usage = usage .. "," .. kvalue
+    end
+
+    if usage ~= "critical" then
+      crt:addExtension(openssl_x509_extension.new("extendedKeyUsage", usage))
+    end
+  end
+
   crt:setSerial(math.random(1, 65535))
   crt:setSubject(req:getSubject())
   crt:setBasicConstraintsCritical(true)

@@ -34,8 +34,17 @@ local csr = laprassl_x509:create_csr(config.bootstrap.subca.subject, keySubCa:to
 local subCa = laprassl_x509:sign_crt(
   laprassl_x509:create_crt(tostring(csr), config.profiles[config.bootstrap.subca.profile]),
   keyRootCa,
-  ca
+  rootCa
+)
+
+local keyServer = openssl_pkey.new{ type = "EC", curve = "secp384r1" }
+local csr = laprassl_x509:create_csr(config.bootstrap.server.subject, keyServer:toPEM("private"))
+local server = laprassl_x509:sign_crt(
+  laprassl_x509:create_crt(tostring(csr), config.profiles[config.bootstrap.server.profile]),
+  keySubCa,
+  subCa
 )
 
 writeFiles(rootCa:getSubject(), { crt = tostring(rootCa), key = keyRootCa:toPEM("private") })
 writeFiles(subCa:getSubject(), { crt = tostring(subCa), key = keySubCa:toPEM("private") })
+writeFiles(server:getSubject(), { crt = tostring(server), key = keyServer:toPEM("private") })

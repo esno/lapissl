@@ -36,6 +36,22 @@ else
         },
         expiry = "25y",
         issuer = "rootca"
+      },
+      server = {
+        authkey = "server",
+        basic_constraints = {
+          ca = false,
+          pathlen = 0
+        },
+        key_usage = {
+          "digitalSignature",
+          "keyEncipherment"
+        },
+        extended_key_usage = {
+          "serverAuth"
+        },
+        expiry = "2y",
+        issuer = "subca"
       }
     },
     bootstrap = {
@@ -50,6 +66,12 @@ else
           CN = "subca"
         },
         profile = "subca"
+      },
+      server = {
+        subject = {
+          CN = "server"
+        },
+        profile = "server"
       }
     }
   }
