@@ -22,7 +22,7 @@ I will skip back to the official bindings as soon as PR [#88](https://github.com
 2. install lapis
 3. install luaossl
 4. clone this repo
-5. change config in src/app.lua
+5. change config in src/config.lua or create /etc/laprassl/config.lua
 6. start nginx (with lua module)
 
 ### install luaossl
