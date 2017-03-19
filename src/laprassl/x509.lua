@@ -36,16 +36,19 @@ function x509.create_crt(self, csr, profile)
   local issued, expires = crt:getLifetime()
   crt:setLifetime(issued, _conv_time(profile.expiry) + expires)
 
-  constraints = {}
-  if profile.basic_constraints.ca == true then
-    crt:setBasicConstraints{ CA = true }
+  if profile.basic_constraints then
+    if profile.basic_constraints.ca == true then
+      crt:setBasicConstraints{ CA = true }
+    else
+      crt:setBasicConstraints{ CA = false }
+    end
+
+    if crt:getBasicConstraints("CA") == true then
+      local current = crt:getBasicConstraints("CA")
+      crt:setBasicConstraints{ CA = current, pathLen = profile.basic_constraints.pathlen or 0 }
+    end
   else
     crt:setBasicConstraints{ CA = false }
-  end
-
-  if crt:getBasicConstraints("CA") == true then
-    current = crt:getBasicConstraints("CA")
-    crt:setBasicConstraints{ CA = current, pathLen = profile.basic_constraints.pathlen or 0 } 
   end
 
   usage = "critical"
