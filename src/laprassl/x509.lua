@@ -121,4 +121,8 @@ function x509.create_csr(self, subject, key)
   return csr
 end
 
+function x509.tocrt(self, crt)
+  return openssl_x509.new(crt)
+end
+
 return x509

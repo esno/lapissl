@@ -86,6 +86,36 @@ function func.create_csr(self, params)
   return { status = response.code, json = response.ret }
 end
 
+function func.get_ca(self, params)
+  local x509ca = laprassl_x509
+  local response = {}
+
+  local invalid = validation:validate(params, {
+    { "crt", exists = true, type = String }
+  })
+
+  if not invalid then
+    local crt = x509ca:tocrt(params.crt)
+    local ca = {}
+
+    repeat
+      i = crt:getIssuer():all()['CN']
+      s = crt:getSubject():all()['CN']
+      local fh = io.open(config.data .. "/" .. i .. ".crt.pem", "r")
+      local issuer = fh:read "*a"
+      fh:close()
+      crt = x509ca:tocrt(issuer)
+      if i ~= s then table.insert(ca, issuer) end
+    until i == s
+
+    response = { code = 200, ret = { ca = ca }}
+  else
+    response = { code = 400, ret = { msg = "Bad Request" }}
+  end
+
+  return { status = response.code, json = response.ret }
+end
+
 function func.write(self, subject, file)
   local subj = subject:all()
   for _, v in pairs(subj) do
@@ -105,6 +135,7 @@ end
 
 local x509 = {
   post = {
+    { context = "/ca", callable = func.get_ca },
     { context = "/crt", callable = func.create_crt },
     { context = "/csr", callable = func.create_csr }
   }

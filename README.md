@@ -45,6 +45,7 @@ For initial installation use `bootstrap.lua` to create rootca, subca and server 
 * create certificates
 * supports multiple root CA's
 * supports multiple sub CA's
+* provide certificate chain
 
 # endpoints
 
@@ -55,6 +56,14 @@ Generates a keypair
     curl -H "Content-type: application/json" \
       -d '{"keytype": "ec"}' \
       'http://127.0.0.1:8080/v1/x509/csr' && echo
+
+## /v1/x509/ca
+
+Generates ca chain
+
+    curl -H "Content-type: application/json" \
+      -d '{"crt": "crt-in-pem-format"}' \
+      'http://127.0.0.1:8080/v1/x509/ca' && echo
 
 ## /v1/x509/csr
 
