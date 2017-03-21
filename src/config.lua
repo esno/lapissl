@@ -22,7 +22,8 @@ else
           "keyCertSign",
           "cRLSign"
         },
-        expiry = "50y"
+        expiry = "50y",
+        cn = "rootca"
       },
       subca = {
         authkey = "subca",
@@ -35,7 +36,8 @@ else
           "cRLSign"
         },
         expiry = "25y",
-        issuer = "rootca"
+        issuer = "rootca",
+        cn = "subca"
       },
       server = {
         authkey = "server",

@@ -24,11 +24,12 @@ function func.create_crt(self, params)
       crt = x509crt:create_crt(params.csr, profile)
 
       if profile.issuer then
-        local fh = io.open(config.data .. "/" .. profile.issuer .. ".crt.pem", "r")
+        local issuer = config.profiles[profile.issuer].cn
+        local fh = io.open(config.data .. "/" .. issuer .. ".crt.pem", "r")
         local ca = {}
         ca.crt = fh:read "*a"
         fh:close()
-        fh = io.open(config.data .. "/" .. profile.issuer .. ".key.pem", "r")
+        fh = io.open(config.data .. "/" .. issuer .. ".key.pem", "r")
         ca.key = fh:read "*a"
         fh:close()
         crt = x509crt:sign_crt(crt, ca.key, ca.crt)
