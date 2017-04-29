@@ -55,7 +55,7 @@ Generates a keypair
 
     curl -H "Content-type: application/json" \
       -d '{"keytype": "ec"}' \
-      'http://127.0.0.1:8080/v1/x509/csr' && echo
+      'http://127.0.0.1:8080/v1/key' && echo
 
 ## /v1/x509/ca
 

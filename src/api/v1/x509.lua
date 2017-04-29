@@ -99,14 +99,22 @@ function func.get_ca(self, params)
     local ca = {}
 
     repeat
-      i = crt:getIssuer():all()['CN']
-      s = crt:getSubject():all()['CN']
-      local fh = io.open(config.data .. "/" .. i .. ".crt.pem", "r")
+      local icrt = crt:getIssuer()
+      local scrt = crt:getSubject()
+      local i = icrt:all()
+      local s = scrt:all()
+      for _, v in pairs(i) do
+        if v.sn == "CN" then iname = v.blob end
+      end
+      for _, v in pairs(s) do
+        if v.sn == "CN" then sname = v.blob end
+      end
+      local fh = io.open(config.data .. "/" .. iname .. ".crt.pem", "r")
       local issuer = fh:read "*a"
       fh:close()
       crt = x509ca:tocrt(issuer)
-      if i ~= s then table.insert(ca, issuer) end
-    until i == s
+      table.insert(ca, issuer)
+    until iname == sname
 
     response = { code = 200, ret = { ca = ca }}
   else
