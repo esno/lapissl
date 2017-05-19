@@ -43,7 +43,13 @@ function func.create_crt(self, params)
           crt = x509crt:sign_crt(crt, params.key, crt)
           response = { code = 201, ret = { crt = tostring(crt) } }
         else
-          response = { code = 400, ret = { msg = "Missing key parameter" } }
+          local issuer = config.profiles[params.profile].cn
+          local fh = io.open(config.data .. "/" .. issuer .. ".key.pem", "r")
+          local ca = {}
+          ca.key = fh:read "*a"
+          fh:close()
+          crt = x509crt:sign_crt(crt, ca.key, crt)
+          response = { code = 201, ret = { crt = tostring(crt) } }
         end
       end
     else
