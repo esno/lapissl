@@ -13,26 +13,9 @@ It's based on the [lapis webframework](http://leafo.net/lapis/) and the [luaossl
 
 ## installation
 
-Currently there is no way to add subjectKeyIdentifier and authorityKeyIdentifier via luaossl.
-Unfortunatelly this X509v3 extensions are necessary for valid CA certificates therefore I'm shipping
-a [customized binding](https://github.com/fnordpipe/luaossl). So you have to install this one instead of the official one.
-I will skip back to the official bindings as soon as PR [#88](https://github.com/wahern/luaossl/pull/88) or [#89](https://github.com/wahern/luaossl/pull/89) is merged.
-
-1. install lua
-2. install lapis
-3. install luaossl
-4. clone this repo
-5. change config in src/config.lua or create /etc/laprassl/config.lua
-6. start nginx (with lua module)
-
-### install luaossl
-
-    git clone https://github.com/fnordpipe/luaossl && cd luaossl
-    make all5.1
-    make DESTDIR="~/lua" install5.1
-
-    export LUA_PATH='~/lua/usr/local/share/lua/5.1/?.so;${LUA_PATH}'
-    export LUA_CPATH='~/lua/usr/local/lib/lua/5.1/?.so;${LUA_CPATH}'
+    luarocks install luna
+    cd src
+    lapis server
 
 ### bootstrap
 

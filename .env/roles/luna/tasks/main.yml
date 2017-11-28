@@ -1,0 +1,51 @@
+---
+- name: add openresty apt key
+  apt_key:
+    url: https://openresty.org/package/pubkey.gpg
+    state: present
+
+- name: add openresty apt repo
+  apt_repository:
+    repo: deb http://openresty.org/package/ubuntu xenial main
+    state: present
+
+- name: update apt cache
+  apt:
+    update_cache: yes
+
+- name: install dependencies
+  apt:
+    name: "{{ item }}"
+    state: latest
+    install_recommends: no
+  with_items:
+    - wget
+    - git
+    - libssl-dev
+    - openresty
+    - unzip
+    - build-essential
+
+- name: download luarocks
+  get_url:
+    url: http://nl.archive.ubuntu.com/ubuntu/pool/universe/l/luarocks/luarocks_2.4.2+dfsg-1_all.deb
+    dest: /opt/luarocks.deb
+
+- name: download luarocks 2.4.2
+  apt:
+    deb: /opt/luarocks.deb
+
+- name: install lapis
+  luarocks:
+    name: luna
+    state: present
+
+- name: compile openresty config
+  shell:
+    lapis
+
+- name: disable services
+  service:
+    name: openresty
+    state: stopped
+    enabled: no

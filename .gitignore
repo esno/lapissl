@@ -1,2 +1,8 @@
-*.compiled
-src/data
+/doc/*.html
+src/nginx.conf*
+src/client_body_temp
+src/fastcgi_temp
+src/logs
+src/proxy_temp
+src/scgi_temp
+src/uwsgi_temp
