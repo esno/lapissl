@@ -1,4 +1,5 @@
 /doc/*.html
+src/*.sqlite3
 src/nginx.conf*
 src/client_body_temp
 src/fastcgi_temp
