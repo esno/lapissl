@@ -1,5 +1,7 @@
+local laprassl = require('laprassl.generic')
 local laprasslProfile = require('laprassl.profile')
 local luna = require('luna.helper')
+local config = require('config')
 
 local profile = {}
 
@@ -7,15 +9,14 @@ function profile.create(self, params)
   local input = luna:validate({
     name = 'string',
     token = 'string',
-    ['x509.notAfter'] = 'string'
+    expiry = 'string'
   }, params)
-  if input then
+  if input and laprassl:isAdmin(luna:getAuthToken()) then
     local values = {
       name = params.name,
       token = params.token,
-      x509 = {
-        notAfter = params.x509.notAfter
-      }
+      expiry = params.expiry,
+      x509 = {}
     }
     if type(params.x509.subject) == 'table' then
       values.x509.subject = {

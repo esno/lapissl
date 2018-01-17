@@ -12,31 +12,9 @@ local migrations = {
       CREATE TABLE profiles (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name,
-        x509subject INTEGER,
-        x509basicconstraints INTEGER,
-        x509keyusage INTEGER,
-        expiry INTEGER
-      )
-    ]]
-
-    db:exec[[
-      CREATE TABLE x509subject (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        cn, c, st, l, o, ou
-      )
-    ]]
-
-    db:exec[[
-      CREATE TABLE x509basicconstraints (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        c, st, l, o, ou,
         ca BOOLEAN DEFAULT 0,
-        pathlenconstraints INTEGER
-      )
-    ]]
-
-    db:exec[[
-      CREATE TABLE x509keyusage (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        pathlenconstraints INTEGER,
         digitalSignature BOOLEAN DEFAULT 0,
         nonRepudiation BOOLEAN DEFAULT 0,
         keyEncipherment BOOLEAN DEFAULT 0,
@@ -45,16 +23,16 @@ local migrations = {
         keyCertSign BOOLEAN DEFAULT 0,
         cRLSign BOOLEAN DEFAULT 0,
         encipherOnly BOOLEAN DEFAULT 0,
-        decipherOnly BOOLEAN DEFAULT 0
+        decipherOnly BOOLEAN DEFAULT 0       
+        expiry INTEGER
       )
     ]]
 
     db:exec[[
       CREATE TABLE x509 (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name,
+        signer INTEGER,
         serial INTEGER,
-        notbefore INTEGER,
         notafter INTEGER,
         crt,
         key,

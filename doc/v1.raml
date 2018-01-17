@@ -1,0 +1,163 @@
+#%RAML 1.0
+---
+
+title: laprassl
+baseUri: ${baseUri}/${version}
+version: v1
+mediaType: application/json
+
+/crt:
+  displayName: Certificate
+
+  /ca:
+    displayName: Certificate Authority
+    post:
+      description: create a certificate authority certificate
+      body:
+        application/json:
+          type: |
+            {
+              "subject": {
+                "C": {
+                  "type": "string",
+                  "required": false
+                },
+                "ST": {
+                  "type": "string",
+                  "required": false
+                },
+                "L": {
+                  "type": "string",
+                  "required": false
+                },
+                "O": {
+                  "type": "string",
+                  "required": false
+                },
+                "OU": {
+                  "type": "string",
+                  "required": false
+                },
+                "emailAddress": {
+                  "type": "string",
+                  "required": false
+                },
+                "CN": {
+                  "type": "string",
+                  "required": true
+                }
+              }
+              "key": {
+                "type": {
+                  "type": "string",
+                  "required": false
+                },
+                "size": {
+                  "type": "string",
+                  "required": false
+                }
+              }
+            }
+          example: |
+            {
+              "subject": {
+                "CN": "example ca"
+              },
+              "key": {
+                "type": "ec"
+              }
+            }
+      responses:
+        201:
+          body:
+            application/json:
+              type: |
+                {
+                  "crt": {
+                    "type": "string",
+                    "required": true
+                  }
+                }
+              example: |
+                {
+                  "crt": "<base64>"
+                }
+
+  /csr:
+    displayName: Certificate Signing Request
+    post:
+      description: create a signing request including a new private/public key
+      body:
+        application/json:
+          type: |
+            {
+              "subject": {
+                "C": {
+                  "type": "string",
+                  "required": false
+                },
+                "ST": {
+                  "type": "string",
+                  "required": false
+                },
+                "L": {
+                  "type": "string",
+                  "required": false
+                },
+                "O": {
+                  "type": "string",
+                  "required": false
+                },
+                "OU": {
+                  "type": "string",
+                  "required": false
+                },
+                "emailAddress": {
+                  "type": "string",
+                  "required": false
+                },
+                "CN": {
+                  "type": "string",
+                  "required": true
+                }
+              }
+              "key": {
+                "type": {
+                  "type": "string",
+                  "required": false
+                },
+                "size": {
+                  "type": "string",
+                  "required": false
+                }
+              }
+            }
+          example: |
+            {
+              "subject": {
+                "CN": "www.example.org"
+              },
+              "key": {
+                "type": "ec"
+              }
+            }
+      responses:
+        201:
+          body:
+            application/json:
+              type: |
+                {
+                  "crt": {
+                    "type": "string",
+                    "required": true
+                  },
+                  "key": {
+                    "type": "string",
+                    "required": true
+                  }
+                }
+              example: |
+                {
+                  "crt": "<base64>",
+                  "key": "<base64>"
+                }
