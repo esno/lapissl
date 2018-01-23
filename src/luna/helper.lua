@@ -1,5 +1,3 @@
-local lapis = require('lapis')
-
 local helper = {}
 
 function helper.validate(self, required, params)

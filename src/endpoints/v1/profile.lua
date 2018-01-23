@@ -9,13 +9,11 @@ function profile.create(self)
   local params = self.params
   local input = luna:validate({
     name = 'string',
-    token = 'string',
     expiry = 'string'
   }, params)
   if input and laprassl:isAdmin(luna:getAuthToken(self.req.headers)) then
     local values = {
       name = params.name,
-      token = params.token,
       expiry = params.expiry,
       x509 = {}
     }
