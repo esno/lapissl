@@ -1,3 +1,5 @@
+local lapis = require('lapis')
+
 local helper = {}
 
 function helper.validate(self, required, params)
@@ -20,6 +22,10 @@ function helper.validate(self, required, params)
     end
   end
   return rc
+end
+
+function helper.getAuthToken(self, headers)
+  return headers['X-Laprassl-Auth'] or nil
 end
 
 return helper
