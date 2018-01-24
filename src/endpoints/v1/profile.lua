@@ -7,11 +7,12 @@ local profile = {}
 
 function profile.create(self)
   local params = self.params
+  local headers = self.req.headers
   local input = luna:validate({
     name = 'string',
     expiry = 'string'
   }, params)
-  if input and laprassl:isAdmin(luna:getAuthToken(self.req.headers)) then
+  if not input and laprassl:isAdmin(luna:getAuthToken(headers)) then
     local values = {
       name = params.name,
       expiry = params.expiry,
@@ -54,7 +55,23 @@ function profile.create(self)
           reason = 'Created'
         }
       }
+    else
+      return {
+        status = 500,
+        json = {
+          status = 500,
+          reason = 'database issue'
+        }
+      }
     end
+  else
+    return {
+      status = 401,
+      json = {
+        status = 401,
+        reason = 'missing or wrong api key'
+      }
+    }
   end
 
   return {
@@ -67,7 +84,7 @@ function profile.create(self)
 end
 
 profile.post = {
-  { context = '/profile', call = profile.create }
+  { context = '', call = profile.create }
 }
 
 return profile

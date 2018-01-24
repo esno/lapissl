@@ -17,9 +17,11 @@ It's based on the [lapis webframework](http://leafo.net/lapis/) and the [luaossl
     cd src
     lapis server
 
-### bootstrap
+> webserver user needs write access to `path/to/db.sqlite` directory! sqlite has to create a lock-file.
 
-For initial installation use `bootstrap.lua` to create rootca, subca and server certificate then start nginx.
+## usage
+
+> see `./test/test.sh`
 
 # features
 

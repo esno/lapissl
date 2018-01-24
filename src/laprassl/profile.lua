@@ -8,22 +8,42 @@ function laprasslProfile.mkProfile(self, values)
   local query = 'INSERT INTO profiles'
   local rows = {}
   local pattern = {}
+  local input = {}
   local i = 0
 
-  for k, v in pairs(values) do
+  input.name = values.name or nil
+  input.expiry = values.expiry or nil
+  input.c = values.x509.subject.C or nil
+  input.st = values.x509.subject.ST or nil
+  input.l = values.x509.subject.L or nil
+  input.o = values.x509.subject.O or nil
+  input.ou = values.x509.subject.OU or nil
+  input.ca = values.x509.basicConstraints.cA or nil
+  input.pathlenconstraints = values.x509.basicConstraints.pathLenConstraints or nil
+  input.digitalSignature = values.x509.keyUsage.digitalSiganture or nil
+  input.nonRepudiation = values.x509.keyUsage.nonRepudiation or nil
+  input.keyEncipherment = values.x509.keyUsage.keyEncipherment or nil
+  input.dataEncipherment = values.x509.keyUsage.dataEncipherment or nil
+  input.keyAgreement = values.x509.keyUsage.keyAgreement or nil
+  input.keyCertSign = values.x509.keyUsage.keyCertSign or nil
+  input.cRLSign = values.x509.keyUsage.cRLSign or nil
+  input.encipherOnly = values.x509.keyUsage.encipherOnly or nil
+  input.decipherOnly = values.x509.keyUsage.decipherOnly or nil
+
+  for k, v in pairs(input) do
+    i = i + 1
     rows[i] = k
     table.insert(pattern, '?')
-    i = i + 1
   end
 
-  query = query .. ' (' table.concat(rows, ', ') .. ')' ..
+  query = query .. ' (' .. table.concat(rows, ', ') .. ')' ..
     ' VALUES (' .. table.concat(pattern, ', ') .. ')'
 
   local stmt = db:prepare(query)
 
-  while i >= 0 do
+  while i > 0 do
+    stmt:bind(i, input[rows[i]])
     i = i - 1
-    stmt:bind(i, values[rows[i]])
   end
 
   local ret = stmt:step()

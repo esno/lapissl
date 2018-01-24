@@ -23,7 +23,7 @@ local migrations = {
         keyCertSign BOOLEAN DEFAULT 0,
         cRLSign BOOLEAN DEFAULT 0,
         encipherOnly BOOLEAN DEFAULT 0,
-        decipherOnly BOOLEAN DEFAULT 0       
+        decipherOnly BOOLEAN DEFAULT 0,
         expiry INTEGER
       )
     ]]
