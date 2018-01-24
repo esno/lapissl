@@ -21,7 +21,9 @@ It's based on the [lapis webframework](http://leafo.net/lapis/) and the [luaossl
 
 ## usage
 
-> see `./test/test.sh`
+> **you have to change the admin-key and secret in your configuration**
+
+see `./test/test.sh`
 
 # features
 
