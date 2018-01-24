@@ -6,158 +6,134 @@ baseUri: ${baseUri}/${version}
 version: v1
 mediaType: application/json
 
-/crt:
-  displayName: Certificate
-
-  /ca:
-    displayName: Certificate Authority
-    post:
-      description: create a certificate authority certificate
-      body:
-        application/json:
-          type: |
-            {
-              "subject": {
-                "C": {
-                  "type": "string",
-                  "required": false
-                },
-                "ST": {
-                  "type": "string",
-                  "required": false
-                },
-                "L": {
-                  "type": "string",
-                  "required": false
-                },
-                "O": {
-                  "type": "string",
-                  "required": false
-                },
-                "OU": {
-                  "type": "string",
-                  "required": false
-                },
-                "emailAddress": {
-                  "type": "string",
-                  "required": false
-                },
-                "CN": {
-                  "type": "string",
-                  "required": true
-                }
-              }
-              "key": {
-                "type": {
-                  "type": "string",
-                  "required": false
-                },
-                "size": {
-                  "type": "string",
-                  "required": false
-                }
-              }
-            }
-          example: |
-            {
-              "subject": {
-                "CN": "example ca"
+/profile
+  displayName: Profile
+  post:
+    description: create a profile
+    body:
+      application/json:
+        type: |
+          {
+            "name": {
+              "type": "string",
+              "required": true
+            },
+            "expiry": {
+              "type": "number",
+              "required": true
+            },
+            "subject": {
+              "C": {
+                "type": "string",
+                "required": false
               },
-              "key": {
-                "type": "ec"
+              "ST": {
+                "type": "string",
+                "required": false
+              },
+              "L": {
+                "type": "string",
+                "required": false
+              },
+              "O": {
+                "type": "string",
+                "required": false
+              },
+              "OU": {
+                "type": "string",
+                "required": false
+              }
+            },
+            "basicConstraints": {
+              "cA": {
+                "type": "boolean",
+                "required": false
+              },
+              "pathLenConstraints": {
+                "type": "number",
+                "required": false
+              }
+            },
+            "keyUsage": {
+              "digitalSignature": {
+                "type": "boolean",
+                "required": false
+              },
+              "nonRepudiation": {
+                "type": "boolean",
+                "required": false
+              },
+              "keyEncipherment": {
+                "type": "boolean",
+                "required": false
+              },
+              "dataEncipherment": {
+                "type": "boolean",
+                "required": false
+              },
+              "keyAgreement": {
+                "type": "boolean",
+                "required": false
+              },
+              "keyCertSign": {
+                "type": "boolean",
+                "required": false
+              },
+              "cRLSign": {
+                "type": "boolean",
+                "required": false
+              },
+              "encipherOnly": {
+                "type": "boolean",
+                "required": false
+              },
+              "decipherOnly": {
+                "type": "boolean",
+                "required": false
               }
             }
+          }
+
+        example: |
+          {
+            "name": "rootcas"
+            "expiry": 365
+          }
       responses:
         201:
           body:
             application/json:
               type: |
                 {
-                  "crt": {
-                    "type": "string",
-                    "required": true
-                  }
-                }
-              example: |
-                {
-                  "crt": "<base64>"
-                }
-
-  /csr:
-    displayName: Certificate Signing Request
-    post:
-      description: create a signing request including a new private/public key
-      body:
-        application/json:
-          type: |
-            {
-              "subject": {
-                "C": {
-                  "type": "string",
-                  "required": false
-                },
-                "ST": {
-                  "type": "string",
-                  "required": false
-                },
-                "L": {
-                  "type": "string",
-                  "required": false
-                },
-                "O": {
-                  "type": "string",
-                  "required": false
-                },
-                "OU": {
-                  "type": "string",
-                  "required": false
-                },
-                "emailAddress": {
-                  "type": "string",
-                  "required": false
-                },
-                "CN": {
-                  "type": "string",
-                  "required": true
-                }
-              }
-              "key": {
-                "type": {
-                  "type": "string",
-                  "required": false
-                },
-                "size": {
-                  "type": "string",
-                  "required": false
-                }
-              }
-            }
-          example: |
-            {
-              "subject": {
-                "CN": "www.example.org"
-              },
-              "key": {
-                "type": "ec"
-              }
-            }
-      responses:
-        201:
-          body:
-            application/json:
-              type: |
-                {
-                  "crt": {
-                    "type": "string",
+                  "status": {
+                    "type": "number",
                     "required": true
                   },
-                  "key": {
+                  "reason": {
                     "type": "string",
                     "required": true
                   }
                 }
               example: |
                 {
-                  "crt": "<base64>",
-                  "key": "<base64>"
+                  "status": "201",
+                  "reason": "Created"
+                }
+
+        401:
+          body:
+            application/json:
+              example:
+                 {
+                  "status": "401",
+                  "reason": "missing or wrong api key"
+                }               
+
+        500:
+          body:
+            application/json:
+              example: |
+                {
+                  "status": "500",
+                  "reason": "database issue"
                 }

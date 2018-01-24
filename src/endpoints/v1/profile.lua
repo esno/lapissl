@@ -10,7 +10,7 @@ function profile.create(self)
   local headers = self.req.headers
   local input = luna:validate({
     name = 'string',
-    expiry = 'string'
+    expiry = 'number'
   }, params)
   if not input and laprassl:isAdmin(luna:getAuthToken(headers)) then
     local values = {
