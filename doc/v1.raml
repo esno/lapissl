@@ -6,7 +6,7 @@ baseUri: ${baseUri}/${version}
 version: v1
 mediaType: application/json
 
-/profile
+/profile:
   displayName: Profile
   post:
     description: create a profile
@@ -114,6 +114,7 @@ mediaType: application/json
                     "required": true
                   }
                 }
+
               example: |
                 {
                   "status": "201",
@@ -136,4 +137,60 @@ mediaType: application/json
                 {
                   "status": "500",
                   "reason": "database issue"
+                }
+
+/x509:
+  displayName: x509
+
+  /key:
+    displayName: Key
+    post:
+      description: create a new rsa or ec key
+      body:
+        application/json:
+          type: |
+            {
+              "keytype": {
+                "type": "string",
+                "description": "must be 'rsa' or 'ec'",
+                "required": true,
+              },
+              "keysize": {
+                "type": "number",
+                "description": "must be set if 'keytype' is of value 'rsa'",
+                "required", false
+              }
+            }
+
+          example: |
+            {
+              "keytype": "rsa",
+              "keysize": 4096
+            }
+
+      responses:
+        201:
+          body:
+            application/json:
+              type: |
+                {
+                  "status": {
+                    "type": "number",
+                    "required": true
+                  },
+                  "reason": {
+                    "type": "string",
+                    "required": true
+                  },
+                  "key": {
+                    "type": "string",
+                    "required": true
+                  }
+                }
+
+              example: |
+                {
+                  "status": "201",
+                  "reason": "Created",
+                  "key": ""
                 }

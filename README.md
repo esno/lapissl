@@ -13,6 +13,8 @@ It's based on the [lapis webframework](http://leafo.net/lapis/) and the [luaossl
 
 ## installation
 
+### test/development environment
+
     luarocks install luna
     cd src
     lapis server
@@ -23,11 +25,11 @@ It's based on the [lapis webframework](http://leafo.net/lapis/) and the [luaossl
 
 > **you have to change the admin-key and secret in your configuration**
 
-see `./test/test.sh`
+see `./tests/test.sh`
 
 # features
 
-* create RSA/ECDSA keys
+* create RSA/EC keys
 * create certificate signing requests
 * create certificates
 * supports multiple root CA's

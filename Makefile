@@ -4,7 +4,7 @@ docs:
 	raml2html --theme raml2html-kaa-theme ./doc/v1.raml > ./doc/v1.html
 
 test:
-	sh ./test/test.sh
+	sh ./tests/test.sh
 
 clean:
 	rm -rf src/nginx.conf.compiled \

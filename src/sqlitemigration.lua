@@ -36,6 +36,7 @@ local migrations = {
         notafter INTEGER,
         crt,
         key,
+        token,
         revoked BOOLEAN DEFAULT 0
       )
     ]]
