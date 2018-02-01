@@ -36,40 +36,6 @@ see `./tests/test.sh`
 * supports multiple sub CA's
 * provide certificate chain
 
-# endpoints
-
-## /v1/key
-
-Generates a keypair
-
-    curl -H "Content-type: application/json" \
-      -d '{"keytype": "ec"}' \
-      'http://127.0.0.1:8080/v1/key' && echo
-
-## /v1/x509/ca
-
-Generates ca chain
-
-    curl -H "Content-type: application/json" \
-      -d '{"crt": "crt-in-pem-format"}' \
-      'http://127.0.0.1:8080/v1/x509/ca' && echo
-
-## /v1/x509/csr
-
-Generates a certificate signing request
-
-    curl -H "Content-type: application/json" \
-      -d '{"cn": "www.example.org", "o": ["example corporation", "example corp."], "key": "key-in-pem-format"}' \
-      'http://127.0.0.1:8080/v1/x509/csr' && echo
-
-## /v1/x509/crt
-
-Generates a signed certificate. Key parameter is only required when the result should be a self-signed certificate
-
-    curl -H "Content-type: application/json" \
-      -d '{"authkey": "profile-specific-key", "profile": "server", "csr": "csr-in-pem-format", "key": "key-in-pem-format"}' \
-      'http://127.0.0.1:8080/v1/x509/crt' && echo
-
 # clients
 
 Currently there is only an [ansible client](https://github.com/fnordpipe/ansible-playbook/blob/master/library/ssl/laprassl.py).
