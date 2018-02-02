@@ -192,5 +192,98 @@ mediaType: application/json
                 {
                   "status": "201",
                   "reason": "Created",
-                  "key": ""
+                  "key": "<PEM_STRING>"
                 }
+
+  /crt:
+    displayName: CRT
+    description: create a new x509 self-issued certificate
+    /{signer}:
+      displayName: CRT
+      post:
+        description: create a new x509 certificate issued by signer
+        body:
+          application/json:
+            type: |
+              {
+                "profile": {
+                  "type": "string",
+                  "required": true
+                },
+                "key": {
+                  "type": "string",
+                  "description": "PEM encoded string of the private key",
+                  "required": true
+                },
+                "x509": {
+                  "cn": {
+                    "type": "string",
+                    "required": true
+                  }
+                },
+                "token": {
+                  "type": "string",
+                  "description": "a random key for signing certificates with this key",
+                  "required", false
+                }
+              }
+
+          example: |
+            {
+              "profile": "root-ca",
+              "key": "<PEM_STRING>",
+              "x509": {
+                "cn": "my awesome ca"
+              },
+              "token": "my-secret-token"
+            }
+
+        responses:
+          201:
+            body:
+              application/json:
+                type: |
+                  {
+                    "status": {
+                      "type": "number",
+                      "required": true
+                    },
+                    "reason": {
+                      "type": "string",
+                      "required": true
+                    },
+                    "crt": {
+                      "type": "string",
+                      "required": true
+                    }
+                  }
+
+          403:
+            body:
+              application/json:
+                type: |
+                  {
+                    "status": {
+                      "type": "number",
+                      "required": true
+                    },
+                    "reason": {
+                      "type": "string",
+                      "required": true
+                    }
+                  }
+
+          404:
+            body:
+              application/json:
+                type: |
+                  {
+                    "status": {
+                      "type": "number",
+                      "required": true
+                    },
+                    "reason": {
+                      "type": "string",
+                      "required": true
+                    }
+                  }

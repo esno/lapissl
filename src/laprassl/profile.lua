@@ -4,6 +4,18 @@ local db = sqlite3.open(config.sqlite)
 
 local laprasslProfile = {}
 
+function laprasslProfile.getProfile(self, name)
+  local stmt = db:prepare('SELECT * FROM profiles WHERE name = ?')
+  local profile = nil
+  stmt:bind_values(name)
+  local ret = stmt:step()
+  if ret == sqlite3.DONE or ret == sqlite3.ROW then
+    profile = stmt:get_named_values()
+  end
+  stmt:finalize()
+  return profile
+end
+
 function laprasslProfile.mkProfile(self, values)
   local query = 'INSERT INTO profiles'
   local rows = {}
@@ -48,7 +60,6 @@ function laprasslProfile.mkProfile(self, values)
 
   local ret = stmt:step()
   stmt:finalize()
-  db:close()
 
   if ret == sqlite3.DONE then
     return true

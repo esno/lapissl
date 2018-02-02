@@ -11,8 +11,9 @@ local migrations = {
     db:exec[[
       CREATE TABLE profiles (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name,
+        name UNIQUE,
         c, st, l, o, ou,
+        emailaddress,
         ca BOOLEAN DEFAULT 0,
         pathlenconstraints INTEGER,
         digitalSignature BOOLEAN DEFAULT 0,
@@ -24,15 +25,25 @@ local migrations = {
         cRLSign BOOLEAN DEFAULT 0,
         encipherOnly BOOLEAN DEFAULT 0,
         decipherOnly BOOLEAN DEFAULT 0,
+        serverAuth BOOLEAN DEFAULT 0,
+        clientAuth BOOLEAN DEFAULT 0,
+        codeSigning BOOLEAN DEFAULT 0,
+        emailProtection BOOLEAN DEFAULT 0,
+        timeStamping BOOLEAN DEFAULT 0,
+        OCSPSigning BOOLEAN DEFAULT 0,
+        ipsecIKE BOOLEAN DEFAULT 0,
+        msCodeInd BOOLEAN DEFAULT 0,
+        msCodeCom BOOLEAN DEFAULT 0,
+        msCTLSign BOOLEAN DEFAULT 0,
+        msEFS BOOLEAN DEFAULT 0,
         expiry INTEGER
       )
     ]]
 
     db:exec[[
       CREATE TABLE x509 (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        serial INTEGER PRIMARY KEY,
         signer INTEGER,
-        serial INTEGER,
         notafter INTEGER,
         crt,
         key,

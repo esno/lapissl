@@ -1,18 +1,8 @@
 {
-  "name": "rootca",
+  "profile": "rootca",
+  "key": "-----BEGIN PRIVATE KEY-----\nMIG2AgEAMBAGByqGSM49AgEGBSuBBAAiBIGeMIGbAgEBBDCOOAu0P0SD7cjY6Xmo\nlO08ZuYglDbiY0u0XREmGzuGhBfMRpVnpSVBBwOF7ES6ThShZANiAASyc2ukmdP5\nz7s+7K0vi7zCsEwnzkT3CrLK0rm1KweBDbwrd+v\/LDiDKeHHx2lFox\/5WIJyFvRv\nHQ8R8XIZGonxEQIHejMutI3TUH7+XO5oOYCacnuYQ2AsKFRo1HOKLa4=\n-----END PRIVATE KEY-----\n",
   "x509": {
-    "subject": {
-      "C": "NL",
-      "ST": "Noord-Holland"
-    },
-    "basicConstraints": {
-      "cA": "true",
-      "pathLenConstraints": 1
-    },
-    "keyUsage": {
-      "keyCertSign": true,
-      "cRLSign": true
-    }
+    "cn": "my-root-ca"
   },
-  "expiry": 18250
+  "token": "random-token"
 }
