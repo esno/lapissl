@@ -1,41 +1,18 @@
-# laprassl
+# Moved to GitLab
 
-An API which aimes to be a full-featured public key infrastructure.
-It's designed to be as simple as possible in packaging as well as in usage.
-There are many use-cases for an application which provides certificates signed by a
-ca which is under your control.
+Due to the recent circumstances where GitHub has been acquired by Microsoft, 
+I have decided to leave this place. There can't be any better time to move 
+to an open-source project (at least one where most parts are) rather than 
+staying and by that supporting Microsoft to build up yet another monopoly 
+based on a closed-source software.
 
-e.g.:
-  - provisioning of many servers
-  - provisioning of embedded devices
+**This repository is now hosted on [GitLab](https://gitlab.com/fnordpipe)**
 
-It's based on the [lapis webframework](http://leafo.net/lapis/) and the [luaossl](https://github.com/wahern/luaossl) openssl bindings.
+We already live in a world almost exclusively controlled by closed software.
+I hope as many people as possible will follow, in order to build up a 
+new open-source standard of git hosting. I believe that all developers 
+(especially open-source developers) should understand this point of view.
 
-## installation
+I highly appreciate anyone who takes the opportunity and does the same.
 
-### test/development environment
-
-    luarocks install luna
-    cd src
-    lapis server
-
-> webserver user needs write access to `path/to/db.sqlite` directory! sqlite has to create a lock-file.
-
-## usage
-
-> **you have to change the admin-key and secret in your configuration**
-
-see `./tests/test.sh`
-
-# features
-
-* create RSA/EC keys
-* create certificate signing requests
-* create certificates
-* supports multiple root CA's
-* supports multiple sub CA's
-* provide certificate chain
-
-# clients
-
-Currently there is only an [ansible client](https://github.com/fnordpipe/ansible-playbook/blob/master/library/ssl/laprassl.py).
+See you on GitLab
